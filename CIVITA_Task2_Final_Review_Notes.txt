@@ -1,0 +1,33 @@
+CIVITA v9.01 — Task 2 final review candidate
+
+Scope: Manual Data Extraction and Plot Digitizer. This is a separate updated copy; the original HTML was not overwritten.
+
+Manual Data Extraction changes
+- Strict numeric parsing and suitable number/date controls in manual table cells.
+- Required-field checks for test_type and main_observed_mechanisms; additional date/range/repeat validation.
+- Inline validation error panels, including records without an assigned literature source; expand/collapse controls in the main interface rather than relying on browser alerts.
+- Go to field selector for wide tables (such as material_batches).
+- Editable suggestions for control_variable_rate_units.
+
+Plot Digitizer changes
+- Strict numeric validation during manual point edits.
+- Automatic-calibration fallback for common open-frame graphs with left and bottom axes (previously assumed a complete rectangular frame).
+- Guided calibration remains available if automatic recognition is uncertain.
+
+Tests and observations
+- The user tested numeric restrictions and an ISO-formatted pouring date exported in JSON (2026-11-12).
+- The user tested required test fields, invalid humidity and temperature, and confirmed inline validation behavior.
+- The test stress–strain plot used y=3x+5 MPa, with x=Strain (%) from 0 to 10, y=Stress (MPa) from 0 to 40.
+- Initial auto-calibration on the old version failed (insufficient tick-label pairs); after the update, user screenshot showed the correct increasing reconstructed curve with automatic calibration.
+- User exported vector, raster, and manually selected points. Prior numerical comparison of auto-calibrated vector export to test equation found MAE approximately 0.0183 MPa (101 points).
+- User confirmed that editing a point changes the reconstructed curve, and that the curve remains after saving and reopening the digitizer.
+- JavaScript syntax check of the final copy passed. This is not a full cross-browser or real-paper QA sign-off.
+
+Not changed / follow-up
+- Opening another PDF may require exporting and clearing existing data. This workflow is a documented usability issue but was not redesigned.
+- A prior auto-extraction message mentioned two curves, but duplicate extraction was not verified; no deduplication logic was added.
+- Raster endpoint points outside axis range were observed in earlier numerical review; endpoint trimming was not changed.
+- Undo was suggested but not independently confirmed in the final user test.
+- Schema-level changes to reinforcement diameter choices, printing terminology or canonical spreadsheet units need stakeholder approval.
+
+Status: Review candidate for the CIVITA team, not an approved upstream release.
