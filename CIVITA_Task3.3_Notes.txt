@@ -1,0 +1,38 @@
+CIVITA v9.01 — Task 3.3 review candidate (Manual data submission 3)
+
+Scope: Manual data submission (webform, "From existing data") for devices_and_supports, loading_histories and data. Built on CIVITA-v9.01.html; this is a separate updated copy (CIVITA-v9.01_Task3.3.html) and the original HTML was not overwritten. Values-tab links were included because they point to Tests and Data.
+
+Differences found between the reference spreadsheet / manual grid and the webform
+- Data: TABLE and IMAGE / VIDEO are separate groups in the spreadsheet, but CIVITA put the five image fields (name, description, type, format, filename) inside "table". Image, video and 2D/3D field records showed every Data field.
+- Devices and Loading had no checks other than the dropdown lists: "50a" in a location, negative times, an end time before the begin time and a blank device type all passed Validate.
+- Data only required data_type; text in mean/SD, a negative or decimal number of specimens and impossible dates passed Validate.
+- Values tab: Test ID and Related Data ID were free-text boxes in both views, so a typed "2" or a label such as "Control sample" only showed up later as a "not found" error.
+- Long Data cards had no grouping, and every new Devices/Loading/Data card had to be linked to its source and test by hand.
+
+Changes (all marked "Task 3.3" in the code)
+- Data field groups now follow the spreadsheet: General, then Scalar / Curve / Table / Image-video / 2D-3D field. Applies to the webform and to the grid's Data columns. Stored values are never deleted when a type changes.
+- Data cards show "General" and "<type> fields" section headings, and a prompt to choose a Data Type when none is set.
+- Required fields on the three tabs are marked with a red * (source_id; device_type; data_type).
+- Number fields get a live hint under the box that turns red while typing: x/y/z_location_mm; initial_control_variable_rate, begin_time_sec, end_time_sec (zero or more); number_of_specimens (whole number, at least 1); quantity_reported_mean; quantity_reported_standard_deviation (zero or more). Typed text is always saved as typed; nothing is silently dropped.
+- extraction_date_yyyy-mm-dd uses a date picker (saved as YYYY-MM-DD; an existing non-ISO value stays editable as text and is flagged).
+- Validate (shared by grid and webform):
+  RED: non-numeric or out-of-range values in the fields above; impossible or future extraction date; empty device_type; end_time_sec before begin_time_sec.
+  YELLOW: device or loading record not linked to a test; empty loading_mode; rate without rate units; scalar data without quantity_reported or mean, or mean without units; SD without a mean; curve data without both x and y quantities; a device_id / x_device_id / y_device_id (data) or device_id (loading) that belongs to a different test; a value left in a Data field that the chosen data_type hides.
+- New cards on Devices / Loading / Data start linked to the same source and test as the card above (or to the only test there is). Picking a test fills its source if the source is still empty.
+- "Duplicate" button on Devices / Loading / Data cards: adds a copy with a new ID right below the original (useful for several gauges on one test). Attached files are not copied.
+- Values tab: Test ID and Related Data ID are dropdowns of existing Tests and Data records (webform and manual grid).
+- Help manual: new section 6.5a describing the above.
+
+Tests
+- Inline scripts pass a JavaScript syntax check; node scripts/check-no-secrets.mjs --all is clean (CENTRAL_DB_URL / CENTRAL_DB_ANON_KEY left empty).
+- Scripted browser test (Chromium) through the webform: contributor set, one source/batch/geometry/specimen/test, then on the three tabs: new card prefilled with source and test; "50a" in X location flagged while typing; Duplicate gives a new ID with the same values; Loading device dropdown lists devices with their type; Data card prompts for a type, shows General + Scalar sections, date picker present, "-3" specimens flagged; switching the type to image / table / curve shows exactly the spreadsheet group of fields; Values Test ID and Related Data ID are dropdowns. Validate reported every planted error (5 red and 4 yellow kinds), cards turned red, a loading record linked to another test's device gave the yellow mismatch warning, and after fixing the values there were no red issues. Grid (manual) Data tab still renders; Save downloads the JSON with all records; data persists after reload. 33/33 checks passed, no JavaScript errors.
+- Regression: concrete_database _GapTest_Example.json (31 devices, 13 loading histories, 89 data records) validated in v9.01 and in this copy: no new red issues and no newly flagged source; 2 new yellow warnings, both genuine (DAT-0062 and DAT-0087 are load curves for TST-0013 whose y_device_id is extensometer DEV-0030 of TST-0014).
+
+Not changed / follow-up (need a decision)
+- The reference spreadsheet's data sheet has curator_first_name and curator_last_name; CIVITA has neither (it has test_repeat_id instead). Adding columns is a schema change, so it was not done here.
+- units_type_list: the spreadsheet has "-", "C" and "other", which CIVITA does not; CIVITA has about 40 extra unit terms. Vocabulary changes need approval.
+- control_variable_rate_units is still free text in this copy; Task 2 already added editable suggestions for it, so it was left to that change to avoid a conflict.
+- The 2D/3D field group (device, quantity, units, file) is a proposal; the spreadsheet example row only fills file_name.
+- Not a full cross-browser or real-paper QA sign-off.
+
+Status: Review candidate for the CIVITA team, not an approved upstream release.
